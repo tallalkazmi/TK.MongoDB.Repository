@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TK.MongoDB
 {
-    public interface IRepository<T> : IDisposable where T : IBaseEntity<ObjectId>
+    public interface IRepository<T> : IDisposable where T : BaseEntity<ObjectId>
     {
         /// <summary>
         /// Initializes collection by dropping collection if exists.
@@ -28,7 +28,7 @@ namespace TK.MongoDB
         Task<T> GetAsync(ObjectId id);
 
         /// <summary>
-        /// Gets document by condition specified or gets all documents if condition is passed as null. Paged records.
+        /// Gets document by condition specified or gets all documents if condition is not passed. Paged records.
         /// </summary>
         /// <param name="currentPage">Page number</param>
         /// <param name="pageSize">Page size</param>
@@ -48,7 +48,7 @@ namespace TK.MongoDB
         /// </summary>
         /// <param name="instance">Document</param>
         /// <returns></returns>
-        Task UpdateAsync(T instance);
+        Task<bool> UpdateAsync(T instance);
 
         /// <summary>
         /// Deletes record based on Id hard or soft based on logical value.
@@ -56,10 +56,10 @@ namespace TK.MongoDB
         /// <param name="id">Key</param>
         /// <param name="logical">Soft delete</param>
         /// <returns></returns>
-        Task DeleteAsync(ObjectId id, bool logical = true);
+        Task<bool> DeleteAsync(ObjectId id, bool logical = true);
 
         /// <summary>
-        /// Counts documents based on condition specifed or counts all documents if condition is passed as null.
+        /// Counts documents based on condition specifed or counts all documents if condition is not passed.
         /// </summary>
         /// <param name="condition">Lamda expression</param>
         /// <returns></returns>
