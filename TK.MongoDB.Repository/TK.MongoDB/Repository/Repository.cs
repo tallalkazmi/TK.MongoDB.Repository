@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TK.MongoDB
 {
-    public class Repository<T> : Settings, IRepository<T> where T : IBaseEntity<ObjectId>
+    public class Repository<T> : Settings, IRepository<T> where T : BaseEntity<ObjectId>
     {
         protected MongoDBContext Context { get; private set; }
         protected IMongoCollection<T> Collection { get; private set; }
@@ -48,40 +48,53 @@ namespace TK.MongoDB
             long totalCount = await query.CountDocumentsAsync();
             List<T> records = await query.SortByDescending(x => x.CreationDate).Skip((currentPage - 1) * pageSize).Limit(pageSize).ToListAsync();
             return new Tuple<IEnumerable<T>, long>(records, totalCount);
-
-            //IAsyncCursor<T> query;
-            //if (condition == null) condition = _ => true;
-            //query = await Collection.Find<T>(condition)
-            //                         .Limit(Limit)
-            //                         .ToCursorAsync();
-            //return await query.ToListAsync();
         }
 
         public async Task<T> InsertAsync(T instance)
         {
             instance.Id = ObjectId.GenerateNewId();
             instance.CreationDate = DateTime.UtcNow;
+            instance.UpdationDate = null;
             await Collection.InsertOneAsync(instance);
             return instance;
         }
 
-        public async Task UpdateAsync(T instance)
+        public async Task<bool> UpdateAsync(T instance)
         {
-            Expression<Func<T, bool>> filter = x => x.Id == instance.Id;
-            var update = new ObjectUpdateDefinition<T>(instance);
-            await Collection.UpdateOneAsync<T>(filter, update);
+            var query = await Collection.FindAsync<T>(x => x.Id == instance.Id);
+            T _instance = await query.FirstOrDefaultAsync();
+            if (_instance == null)
+                throw new KeyNotFoundException($"Object with Id: '{instance.Id}' was not found.");
+            else
+            {
+                instance.CreationDate = _instance.CreationDate;
+                instance.UpdationDate = DateTime.UtcNow;
+            }
+
+            ReplaceOneResult result = await Collection.ReplaceOneAsync<T>(x => x.Id == instance.Id, instance);
+            return result.ModifiedCount != 0;
         }
 
-        public async Task DeleteAsync(ObjectId id, bool logical = true)
+        public async Task<bool> DeleteAsync(ObjectId id, bool logical = true)
         {
-            Expression<Func<T, bool>> filter = x => x.Id == id;
+            var query = await Collection.FindAsync<T>(x => x.Id == id);
+            T _instance = await query.FirstOrDefaultAsync();
+            if (_instance == null)
+                throw new KeyNotFoundException($"Object with Id: '{id}' was not found.");
+
             if (logical)
             {
-                var update = new JsonUpdateDefinition<T>("deleted:'true'");
-                await Collection.UpdateOneAsync<T>(filter, update);
+                UpdateDefinition<T> update = Builders<T>.Update
+                    .Set(x => x.Deleted, true)
+                    .Set(x => x.UpdationDate, DateTime.UtcNow);
+                UpdateResult result = await Collection.UpdateOneAsync(x => x.Id == id, update);
+                return result.ModifiedCount != 0;
             }
             else
-                Collection.DeleteOne<T>(filter);
+            {
+                DeleteResult result = await Collection.DeleteOneAsync(x => x.Id == id);
+                return result.DeletedCount != 0;
+            }
         }
 
         public async Task<long> CountAsync(Expression<Func<T, bool>> condition = null)

@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TK.MongoDB.Test
 {
@@ -16,14 +18,17 @@ namespace TK.MongoDB.Test
         public void Find()
         {
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.FindAsync(x => x.Id == new ObjectId("5e32e13898d2c16694b9b931")).Result;
+            Activity result = repository.FindAsync(x => x.Id == new ObjectId("5e36997898d2c15a400f8968")).Result;
+            Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
         [TestMethod]
         public void GetById()
         {
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.GetAsync(new ObjectId("5e32e13898d2c16694b9b931")).Result;
+            Activity result = repository.GetAsync(new ObjectId("5e36997898d2c15a400f8968")).Result;
+            Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
+
         }
 
         [TestMethod]
@@ -31,6 +36,7 @@ namespace TK.MongoDB.Test
         {
             Repository<Activity> repository = new Repository<Activity>();
             var result = repository.GetAsync(1, 10, x => x.Name.Contains("abc") && x.Deleted == false).Result;
+            Console.WriteLine($"Output:\nTotal: {result.Item2}\n{JToken.Parse(JsonConvert.SerializeObject(result.Item1)).ToString(Formatting.Indented)}");
         }
 
         [TestMethod]
@@ -42,7 +48,8 @@ namespace TK.MongoDB.Test
             };
 
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.InsertAsync(activity).Result;
+            Activity result = repository.InsertAsync(activity).Result;
+            Console.WriteLine($"Inserted:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
         [TestMethod]
@@ -50,33 +57,38 @@ namespace TK.MongoDB.Test
         {
             Activity activity = new Activity()
             {
-                Id = new ObjectId("5e32e13898d2c16694b9b931"),
-                Name = "abc2"
+                Id = new ObjectId("5e36998998d2c1540ca23894"),
+                Name = "abc3",
+                
             };
 
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.UpdateAsync(activity);
+            bool result = repository.UpdateAsync(activity).Result;
+            Console.WriteLine($"Updated: {result}");
         }
 
         [TestMethod]
         public void Delete()
         {
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.DeleteAsync(new ObjectId("5e32e13898d2c16694b9b931"));
+            bool result = repository.DeleteAsync(new ObjectId("5e36998998d2c1540ca23894")).Result;
+            Console.WriteLine($"Deleted: {result}");
         }
 
         [TestMethod]
         public void Count()
         {
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.CountAsync().Result;
+            long result = repository.CountAsync().Result;
+            Console.WriteLine($"Count: {result}");
         }
 
         [TestMethod]
         public void Exists()
         {
             Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.ExistsAsync(x => x.Name == "5e32e0f598d2c15544e1ee0b");
+            bool result = repository.ExistsAsync(x => x.Name == "abc").Result;
+            Console.WriteLine($"Exists: {result}");
         }
     }
 }
