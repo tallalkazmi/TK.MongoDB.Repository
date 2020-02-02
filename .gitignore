@@ -348,3 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/TK.MongoDB.Repository/TK.MongoDB/TK.MongoDB.nuspec
+/TK.MongoDB.Repository/TK.MongoDB/nuget.exe
+/TK.MongoDB.Repository/TK.MongoDB/nuget-commads.txt
