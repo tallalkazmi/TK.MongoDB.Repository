@@ -28,7 +28,6 @@ namespace TK.MongoDB.Test
             Repository<Activity> repository = new Repository<Activity>();
             Activity result = repository.GetAsync(new ObjectId("5e36997898d2c15a400f8968")).Result;
             Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
-
         }
 
         [TestMethod]
@@ -58,8 +57,7 @@ namespace TK.MongoDB.Test
             Activity activity = new Activity()
             {
                 Id = new ObjectId("5e36998998d2c1540ca23894"),
-                Name = "abc3",
-                
+                Name = "abc3"
             };
 
             Repository<Activity> repository = new Repository<Activity>();
