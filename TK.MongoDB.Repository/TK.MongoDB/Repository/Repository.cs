@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using TK.MongoDB.Models;
 
 namespace TK.MongoDB
 {
