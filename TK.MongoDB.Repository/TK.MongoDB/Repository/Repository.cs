@@ -22,13 +22,26 @@ namespace TK.MongoDB
 
             //Create index for CreationDate (descending) and Expires after 'ExpireAfterSecondsTimeSpan'
             var indexBuilder = Builders<T>.IndexKeys;
-            var indexModel = new CreateIndexModel<T>(indexBuilder.Descending(x => x.CreationDate), new CreateIndexOptions { ExpireAfter = ExpireAfterSecondsTimeSpan });
+            var indexModel = new CreateIndexModel<T>(indexBuilder.Descending(x => x.CreationDate), new CreateIndexOptions { ExpireAfter = ExpireAfterSecondsTimeSpan, Name = "CreationDateIndex" });
             Collection.Indexes.CreateOneAsync(indexModel);
         }
 
         public void InitCollection()
         {
             Context.Database.DropCollection(CollectionName);
+        }
+
+        public async Task SetCollectionExpiryIndex(int expireAfterSeconds)
+        {
+            TimeSpan timeSpan = new TimeSpan(TimeSpan.TicksPerSecond * expireAfterSeconds);
+
+            //Drop previous index
+            await Collection.Indexes.DropOneAsync("CreationDateIndex");
+
+            //Create index for CreationDate (descending) and Expires after 'ExpireAfterSecondsTimeSpan'
+            var indexBuilder = Builders<T>.IndexKeys;
+            var indexModel = new CreateIndexModel<T>(indexBuilder.Descending(x => x.CreationDate), new CreateIndexOptions { ExpireAfter = timeSpan, Name = "CreationDateIndex" });
+            await Collection.Indexes.CreateOneAsync(indexModel);
         }
 
         public async Task<T> FindAsync(Expression<Func<T, bool>> condition)
