@@ -38,6 +38,22 @@ namespace TK.MongoDB
         Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, Expression<Func<T, bool>> condition = null);
 
         /// <summary>
+        /// Gets document by condition specified or gets all documents if condition is not passed. Nonpaged records.
+        /// </summary>
+        /// <param name="condition">Lamda expressionparam>
+        /// <returns>Matching documents</returns>
+        IEnumerable<T> Get(Expression<Func<T, bool>> condition = null);
+
+        /// <summary>
+        /// Gets document with In filter.
+        /// </summary>
+        /// <typeparam name="TField">Field type to search in</typeparam>
+        /// <param name="field">Field name to search in</param>
+        /// <param name="values">Values to search in</param>
+        /// <returns>Matching documents</returns>
+        IEnumerable<T> In<TField>(Expression<Func<T, TField>> field, IEnumerable<TField> values) where TField : class;
+
+        /// <summary>
         /// Inserts single record.
         /// </summary>
         /// <param name="instance">Document</param>

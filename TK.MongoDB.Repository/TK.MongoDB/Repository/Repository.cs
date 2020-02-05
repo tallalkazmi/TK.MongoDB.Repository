@@ -51,6 +51,23 @@ namespace TK.MongoDB
             return new Tuple<IEnumerable<T>, long>(records, totalCount);
         }
 
+        public IEnumerable<T> Get(Expression<Func<T, bool>> condition = null)
+        {
+            if (condition == null) condition = _ => true;
+            var query = Collection.Find<T>(condition);
+            List<T> records = query.SortByDescending(x => x.CreationDate).ToList();
+            return records;
+        }
+
+        public IEnumerable<T> In<TField>(Expression<Func<T, TField>> field, IEnumerable<TField> values) where TField : class
+        {
+            var builder = Builders<T>.Filter;
+            var filter = builder.In<TField>(field, values);
+            var query = Collection.Find<T>(filter);
+            List<T> records = query.SortByDescending(x => x.CreationDate).ToList();
+            return records;
+        }
+
         public async Task<T> InsertAsync(T instance)
         {
             instance.Id = ObjectId.GenerateNewId();
