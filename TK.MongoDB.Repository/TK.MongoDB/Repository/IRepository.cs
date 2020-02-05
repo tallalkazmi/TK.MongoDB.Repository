@@ -15,13 +15,6 @@ namespace TK.MongoDB
         void InitCollection();
 
         /// <summary>
-        /// Set collection ExpireAfterSeconds index
-        /// </summary>
-        /// <param name="expireAfterSeconds">Expire after seconds idex.</param>
-        /// <returns></returns>
-        Task SetCollectionExpiryIndex(int expireAfterSeconds);
-
-        /// <summary>
         /// Find single document by condition specified.
         /// </summary>
         /// <param name="condition">Lamda expression</param>
