@@ -11,7 +11,8 @@ namespace TK.MongoDB.Test
     {
         public RepoUnitTest()
         {
-            Settings.Configure(2592000, "MongoDocConnection");
+            Settings.Configure("MongoDocConnection");
+            Settings.Configure<Activity>(-1);
         }
 
         [TestMethod]

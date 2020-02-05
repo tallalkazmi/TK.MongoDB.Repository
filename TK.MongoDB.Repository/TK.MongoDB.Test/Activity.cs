@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using TK.MongoDB.Models;
 
 namespace TK.MongoDB.Test
 {
