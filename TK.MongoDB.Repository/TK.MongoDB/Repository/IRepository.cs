@@ -40,7 +40,7 @@ namespace TK.MongoDB
         /// <summary>
         /// Gets document by condition specified or gets all documents if condition is not passed. Nonpaged records.
         /// </summary>
-        /// <param name="condition">Lamda expressionparam>
+        /// <param name="condition">Lamda expression</param>
         /// <returns>Matching documents</returns>
         IEnumerable<T> Get(Expression<Func<T, bool>> condition = null);
 

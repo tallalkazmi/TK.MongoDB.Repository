@@ -4,22 +4,33 @@ Repository pattern implementation *(using linq)* of MongoDB in .NET Framework
 ## Usage
 #### Settings
 
-1. Default `expireAfterSeconds` is set to 2592000 seconds or 30 days, but you can configure this by calling a static method as below:
-
-   ```c#
-   Settings.Configure(2592000);
-   ```
-
 2. Default `ConnectionStringSettingName` is set to "*MongoDocConnection*", but you can configure this by calling a static method as below:
 
    ```c#
-   Settings.Configure(connectionStringSettingName: "MongoDocConnection");
+   Settings.Configure("MongoDocConnection");
    ```
 
-3. You can also set both of the settings as below:
+3. you can configure `ExpiryAfterSeconds` index for a specific collection by calling a static method as below:
 
    ```c#
-   Settings.Configure(2592000, "MongoDocConnection");
+   Settings.Configure<Activity>(2592000);
+   ```
+
+4. Example:
+
+   ```c#
+   public class RepoUnitTest
+   {
+       Repository<Activity> ActivityRepository;
+       public RepoUnitTest()
+       {
+           Settings.Configure("MongoDocConnection");
+           Settings.Configure<Activity>(2592000);
+           ActivityRepository = new Repository<Activity>();
+       }
+   
+   	//.... other methods and properties
+   }
    ```
 
 #### Models
@@ -35,28 +46,43 @@ public class Activity : BaseFile<ObjectId>
 
 #### Repository methods
 
-1. Find (by Linq Expression)
+1. Find *asynchronous* (using Linq Expression.)
 
    ```c#
-   Repository<Activity> repository = new Repository<Activity>();
-   Activity result = repository.FindAsync(x => x.Id == new ObjectId("5e36997898d2c15a400f8968")).Result;
-   ```
-
-2. Get (by Id)
-
-   ```c#
-   Repository<Activity> repository = new Repository<Activity>();
-   Activity result = repository.GetAsync(new ObjectId("5e36997898d2c15a400f8968")).Result;
-   ```
-
-3. Get (by Linq Expression)
-
-   ```c#
-   Repository<Activity> repository = new Repository<Activity>();
-   var result = repository.GetAsync(1, 10, x => x.Name.Contains("abc") && x.Deleted == false).Result;
+   Activity result = ActivityRepository.FindAsync(x => x.Id == new ObjectId("5e36997898d2c15a400f8968")).Result;
    ```
    
-4. Insert
+2. Get *asynchronous* (by Id)
+
+   ```c#
+   Activity result = ActivityRepository.GetAsync(new ObjectId("5e36997898d2c15a400f8968")).Result;
+   ```
+   
+3. Get *asynchronous* (using Linq Expression.)
+
+   Has paged records in a `Tuple<IEnumerable<T>, long>` of records and total count.
+   
+   ```c#
+   var result = ActivityRepository.GetAsync(1, 10, x => x.Name.Contains("abc") && x.Deleted == false).Result;
+   Console.WriteLine($"Output:\nTotal: {result.Item2}\n{JToken.Parse(JsonConvert.SerializeObject(result.Item1)).ToString(Formatting.Indented)}");
+   ```
+   
+4. Get *synchronous* (using Linq Expression.)
+
+   Has nonpaged records.
+
+   ```c#
+   var result = ActivityRepository.Get(x => x.Name.Contains("abc") && x.Deleted == false);
+   ```
+
+5. In *synchronous*  (Get by `IN` filter. *Nonpaged records*)
+
+   ```c#
+   List<string> names = new List<string> { "abc", "def", "ghi" };
+   var result = ActivityRepository.In(x => x.Name, names);
+   ```
+
+6. Insert *asynchronous* 
 
    ```c#
    Activity activity = new Activity()
@@ -64,11 +90,10 @@ public class Activity : BaseFile<ObjectId>
        Name = "abc"
    };
    
-   Repository<Activity> repository = new Repository<Activity>();
-   Activity result = repository.InsertAsync(activity).Result;
+   Activity result = ActivityRepository.InsertAsync(activity).Result;
    ```
 
-5. Update
+7. Update *asynchronous* 
 
    ```c#
    Activity activity = new Activity()
@@ -77,29 +102,25 @@ public class Activity : BaseFile<ObjectId>
    	Name = "abc3"
    };
    
-   Repository<Activity> repository = new Repository<Activity>();
-   bool result = repository.UpdateAsync(activity).Result;
+   bool result = ActivityRepository.UpdateAsync(activity).Result;
    ```
 
-6. Delete (by Id)
+8. Delete *asynchronous* (by Id)
 
    ```c#
-   Repository<Activity> repository = new Repository<Activity>();
-   bool result = repository.DeleteAsync(new ObjectId("5e36998998d2c1540ca23894")).Result;
+   bool result = ActivityRepository.DeleteAsync(new ObjectId("5e36998998d2c1540ca23894")).Result;
    ```
 
-7. Count
+9. Count *asynchronous* 
 
    ```c#
-   Repository<Activity> repository = new Repository<Activity>();
-   long result = repository.CountAsync().Result;
+   long result = ActivityRepository.CountAsync().Result;
    ```
 
-8. Exists (by Linq Expression)
+10. Exists *asynchronous* (using Linq Expression)
 
    ```c#
-   Repository<Activity> repository = new Repository<Activity>();
-   bool result = repository.ExistsAsync(x => x.Name == "abc").Result;
+   bool result = ActivityRepository.ExistsAsync(x => x.Name == "abc").Result;
    ```
 
 #### Tests

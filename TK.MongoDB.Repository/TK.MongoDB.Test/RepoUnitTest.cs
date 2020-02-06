@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using Newtonsoft.Json;
@@ -9,34 +10,48 @@ namespace TK.MongoDB.Test
     [TestClass]
     public class RepoUnitTest
     {
+        Repository<Activity> ActivityRepository;
         public RepoUnitTest()
         {
             Settings.Configure("MongoDocConnection");
-            Settings.Configure<Activity>(-1);
+            Settings.Configure<Activity>(2592000);
+            ActivityRepository = new Repository<Activity>();
         }
 
         [TestMethod]
         public void Find()
         {
-            Repository<Activity> repository = new Repository<Activity>();
-            Activity result = repository.FindAsync(x => x.Id == new ObjectId("5e36997898d2c15a400f8968")).Result;
+            Activity result = ActivityRepository.FindAsync(x => x.Id == new ObjectId("5e36997898d2c15a400f8968")).Result;
             Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
         [TestMethod]
         public void GetById()
         {
-            Repository<Activity> repository = new Repository<Activity>();
-            Activity result = repository.GetAsync(new ObjectId("5e36997898d2c15a400f8968")).Result;
+            Activity result = ActivityRepository.GetAsync(new ObjectId("5e36997898d2c15a400f8968")).Result;
             Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
         [TestMethod]
         public void Get()
         {
-            Repository<Activity> repository = new Repository<Activity>();
-            var result = repository.GetAsync(1, 10, x => x.Name.Contains("abc") && x.Deleted == false).Result;
+            var result = ActivityRepository.GetAsync(1, 10, x => x.Name.Contains("abc") && x.Deleted == false).Result;
             Console.WriteLine($"Output:\nTotal: {result.Item2}\n{JToken.Parse(JsonConvert.SerializeObject(result.Item1)).ToString(Formatting.Indented)}");
+        }
+
+        [TestMethod]
+        public void GetNonPaged()
+        {
+            var result = ActivityRepository.Get(x => x.Name.Contains("abc") && x.Deleted == false);
+            Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
+        }
+
+        [TestMethod]
+        public void In()
+        {
+            List<string> names = new List<string> { "abc", "def", "ghi" };
+            var result = ActivityRepository.In(x => x.Name, names);
+            Console.WriteLine($"Output:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
         [TestMethod]
@@ -47,8 +62,7 @@ namespace TK.MongoDB.Test
                 Name = "abc"
             };
 
-            Repository<Activity> repository = new Repository<Activity>();
-            Activity result = repository.InsertAsync(activity).Result;
+            Activity result = ActivityRepository.InsertAsync(activity).Result;
             Console.WriteLine($"Inserted:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
@@ -61,32 +75,28 @@ namespace TK.MongoDB.Test
                 Name = "abc3"
             };
 
-            Repository<Activity> repository = new Repository<Activity>();
-            bool result = repository.UpdateAsync(activity).Result;
+            bool result = ActivityRepository.UpdateAsync(activity).Result;
             Console.WriteLine($"Updated: {result}");
         }
 
         [TestMethod]
         public void Delete()
         {
-            Repository<Activity> repository = new Repository<Activity>();
-            bool result = repository.DeleteAsync(new ObjectId("5e36998998d2c1540ca23894")).Result;
+            bool result = ActivityRepository.DeleteAsync(new ObjectId("5e36998998d2c1540ca23894")).Result;
             Console.WriteLine($"Deleted: {result}");
         }
 
         [TestMethod]
         public void Count()
         {
-            Repository<Activity> repository = new Repository<Activity>();
-            long result = repository.CountAsync().Result;
+            long result = ActivityRepository.CountAsync().Result;
             Console.WriteLine($"Count: {result}");
         }
 
         [TestMethod]
         public void Exists()
         {
-            Repository<Activity> repository = new Repository<Activity>();
-            bool result = repository.ExistsAsync(x => x.Name == "abc").Result;
+            bool result = ActivityRepository.ExistsAsync(x => x.Name == "abc").Result;
             Console.WriteLine($"Exists: {result}");
         }
     }
