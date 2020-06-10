@@ -4,7 +4,7 @@ using System.Configuration;
 
 namespace TK.MongoDB
 {
-    public class MongoDBContext : IDisposable
+    internal class MongoDBContext : IDisposable
     {
         readonly string DatabaseName;
         MongoClient Client;

@@ -6,11 +6,13 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TK.MongoDB.Models;
 
-namespace TK.MongoDB
+namespace TK.MongoDB.Data
 {
-    public class Repository<T> : Settings, IRepository<T> where T : BaseEntity<ObjectId>
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    public class Repository<T> : Settings, IRepository<T> where T : BaseEntity
     {
-        protected MongoDBContext Context { get; private set; }
+        private readonly MongoDBContext Context;
+
         protected IMongoCollection<T> Collection { get; private set; }
         protected string CollectionName { get; private set; }
 
@@ -133,4 +135,5 @@ namespace TK.MongoDB
                 Context.Dispose();
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

@@ -1,13 +1,17 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 
 namespace TK.MongoDB.Models
 {
-    public abstract class BaseEntity<T>
+    /// <summary>
+    /// Abstract base entity to derive object classes from. Inherit this class to all classes to be used in as data models.
+    /// </summary>
+    public abstract class BaseEntity
     {
         /// <summary>
         /// Primary Key. Generates new <c>ObjectId</c> on insert.
         /// </summary>
-        public T Id { get; set; }
+        public ObjectId Id { get; set; }
 
         /// <summary>
         /// Soft delete. Defaults to <c>False</c> on insert.
