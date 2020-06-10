@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>TK.MongoDB.Repository</id>
+    <version>$version$</version>
+    <title>TK.MongoDB.Repository</title>
+    <authors>Tallal Kazmi</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/tallalkazmi/TK.MongoDB.Repository</projectUrl>
+    <description>$description$</description>
+    <releaseNotes>Get all and In methods added to repository</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <tags>mongodb repository linq .net c#</tags>
+  </metadata>
+</package>
