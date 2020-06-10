@@ -1,13 +1,18 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using System;
 using System.Linq;
 using TK.MongoDB.Models;
 
 namespace TK.MongoDB
 {
+    /// <summary>
+    /// Database: Connection and Expire After Seconds Index configurations
+    /// </summary>
     public class Settings
     {
+        /// <summary>
+        /// Connection String name from *.config file. Default value is set to <i>MongoDocConnection</i>.
+        /// </summary>
         protected static string ConnectionStringSettingName = "MongoDocConnection";
 
         /// <summary>
@@ -24,7 +29,7 @@ namespace TK.MongoDB
         /// </summary>
         /// <typeparam name="T">Collection model</typeparam>
         /// <param name="expireAfterSeconds">Documents expire after seconds</param>
-        public static void Configure<T>(int expireAfterSeconds) where T : BaseEntity<ObjectId>
+        public static void Configure<T>(int expireAfterSeconds) where T : BaseEntity
         {
             MongoDBContext Context = new MongoDBContext(ConnectionStringSettingName);
             IMongoCollection<T> Collection = Context.Database.GetCollection<T>(typeof(T).Name.ToLower());

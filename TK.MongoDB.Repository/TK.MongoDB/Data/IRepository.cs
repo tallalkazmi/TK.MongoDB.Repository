@@ -5,9 +5,13 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TK.MongoDB.Models;
 
-namespace TK.MongoDB
+namespace TK.MongoDB.Data
 {
-    public interface IRepository<T> : IDisposable where T : BaseEntity<ObjectId>
+    /// <summary>
+    /// Data Repository
+    /// </summary>
+    /// <typeparam name="T">Type of BaseEntity</typeparam>
+    public interface IRepository<T> : IDisposable where T : BaseEntity
     {
         /// <summary>
         /// Initializes collection by dropping collection if exists.

@@ -8,14 +8,12 @@ using Newtonsoft.Json.Linq;
 namespace TK.MongoDB.Test
 {
     [TestClass]
-    public class RepoUnitTest
+    public class RepoUnitTest:BaseTest
     {
-        Repository<Activity> ActivityRepository;
         public RepoUnitTest()
         {
             Settings.Configure("MongoDocConnection");
             Settings.Configure<Activity>(2592000);
-            ActivityRepository = new Repository<Activity>();
         }
 
         [TestMethod]
@@ -66,7 +64,7 @@ namespace TK.MongoDB.Test
             Console.WriteLine($"Inserted:\n{JToken.Parse(JsonConvert.SerializeObject(result)).ToString(Formatting.Indented)}");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Update()
         {
             Activity activity = new Activity()
@@ -79,7 +77,7 @@ namespace TK.MongoDB.Test
             Console.WriteLine($"Updated: {result}");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Delete()
         {
             bool result = ActivityRepository.DeleteAsync(new ObjectId("5e36998998d2c1540ca23894")).Result;
