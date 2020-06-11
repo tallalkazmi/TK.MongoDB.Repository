@@ -10,7 +10,7 @@
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/tallalkazmi/TK.MongoDB.Repository</projectUrl>
     <description>$description$</description>
-    <releaseNotes>Get all and In methods added to repository</releaseNotes>
+    <releaseNotes>BaseEntity generic removed. Performance enhanced</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>mongodb repository linq .net c#</tags>
   </metadata>
