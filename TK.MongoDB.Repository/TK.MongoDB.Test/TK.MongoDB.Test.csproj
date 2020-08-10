@@ -100,6 +100,7 @@
   <ItemGroup>
     <Compile Include="Activity.cs" />
     <Compile Include="BaseTest.cs" />
+    <Compile Include="OverrideRepository.cs" />
     <Compile Include="RepoUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

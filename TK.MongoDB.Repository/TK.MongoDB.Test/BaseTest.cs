@@ -18,6 +18,10 @@ namespace TK.MongoDB.Test
                         .As(typeof(IRepository<>))
                         .InstancePerLifetimeScope();
 
+                    builder.RegisterGeneric(typeof(OverrideRepository<>))
+                        .As(typeof(IRepository<>))
+                        .InstancePerLifetimeScope();
+
                     var container = builder.Build();
                     autofacContainer = container;
                 }

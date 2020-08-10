@@ -70,7 +70,7 @@ namespace TK.MongoDB.Data
             return records;
         }
 
-        public async Task<T> InsertAsync(T instance)
+        public virtual async Task<T> InsertAsync(T instance)
         {
             instance.Id = ObjectId.GenerateNewId();
             instance.CreationDate = DateTime.UtcNow;
@@ -79,7 +79,7 @@ namespace TK.MongoDB.Data
             return instance;
         }
 
-        public async Task<bool> UpdateAsync(T instance)
+        public virtual async Task<bool> UpdateAsync(T instance)
         {
             var query = await Collection.FindAsync<T>(x => x.Id == instance.Id);
             T _instance = await query.FirstOrDefaultAsync();
@@ -95,7 +95,7 @@ namespace TK.MongoDB.Data
             return result.ModifiedCount != 0;
         }
 
-        public async Task<bool> DeleteAsync(ObjectId id, bool logical = true)
+        public virtual async Task<bool> DeleteAsync(ObjectId id, bool logical = true)
         {
             var query = await Collection.FindAsync<T>(x => x.Id == id);
             T _instance = await query.FirstOrDefaultAsync();
