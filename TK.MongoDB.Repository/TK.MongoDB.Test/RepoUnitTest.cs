@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 namespace TK.MongoDB.Test
 {
     [TestClass]
-    public class RepoUnitTest:BaseTest
+    public class RepoUnitTest : BaseTest
     {
         public RepoUnitTest()
         {
