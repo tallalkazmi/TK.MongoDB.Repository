@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -40,6 +41,16 @@ namespace TK.MongoDB.Data
         /// <param name="condition">Lamda expression</param>
         /// <returns>Tuple of records and total number of records</returns>
         Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, Expression<Func<T, bool>> condition = null);
+
+        /// <summary>
+        /// Gets document by filter specified. Paged records.
+        /// </summary>
+        /// <param name="currentPage">Page number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="filter">Filter definition</param>
+        /// <param name="sort">Sort definition</param>
+        /// <returns>Tuple of records and total number of records</returns>
+        Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, FilterDefinition<T> filter = null, SortDefinition<T> sort = null);
 
         /// <summary>
         /// Gets document by condition specified or gets all documents if condition is not passed. Nonpaged records.

@@ -53,6 +53,16 @@ namespace TK.MongoDB.Data
             return new Tuple<IEnumerable<T>, long>(records, totalCount);
         }
 
+        public async Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, FilterDefinition<T> filter = null, SortDefinition<T> sort = null)
+        {
+            var query = Collection.Find<T>(filter);
+            long totalCount = await query.CountDocumentsAsync();
+
+            if (sort == null) sort = Builders<T>.Sort.Descending(x => x.CreationDate);
+            List<T> records = await query.Sort(sort).Skip((currentPage - 1) * pageSize).Limit(pageSize).ToListAsync();
+            return new Tuple<IEnumerable<T>, long>(records, totalCount);
+        }
+
         public IEnumerable<T> Get(Expression<Func<T, bool>> condition = null)
         {
             if (condition == null) condition = _ => true;
