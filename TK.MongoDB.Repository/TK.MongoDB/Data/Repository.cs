@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using TK.MongoDB.Models;
@@ -22,10 +23,15 @@ namespace TK.MongoDB.Data
             CollectionName = typeof(T).Name.ToLower();
             Collection = Context.Database.GetCollection<T>(CollectionName);
 
-            //Create index for CreationDate (descending)
-            var indexBuilder = Builders<T>.IndexKeys;
-            var indexModel = new CreateIndexModel<T>(indexBuilder.Descending(x => x.CreationDate), new CreateIndexOptions { Name = "CreationDateIndex" });
-            Collection.Indexes.CreateOneAsync(indexModel);
+            //Create index for CreationDate (descending), if it does not exists
+            var indexes = Collection.Indexes.List().ToList();
+            bool DoesIndexExists = indexes.Any(x => x.GetValue("name").AsString == "CreationDateIndex");
+            if (!DoesIndexExists)
+            {
+                var indexBuilder = Builders<T>.IndexKeys;
+                var indexModel = new CreateIndexModel<T>(indexBuilder.Descending(x => x.CreationDate), new CreateIndexOptions { Name = "CreationDateIndex" });
+                Collection.Indexes.CreateOneAsync(indexModel);
+            }
         }
 
         public void InitCollection()
