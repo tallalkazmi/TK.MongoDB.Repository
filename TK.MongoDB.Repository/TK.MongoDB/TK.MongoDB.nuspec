@@ -10,7 +10,7 @@
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/tallalkazmi/TK.MongoDB.Repository</projectUrl>
     <description>$description$</description>
-    <releaseNotes>GetAsync method added with FilterDefinition and SortDefinition</releaseNotes>
+    <releaseNotes>Exception fixed: Index with name: CreationDateIndex already exists with different options.</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>mongodb repository linq .net c#</tags>
   </metadata>
