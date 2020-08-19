@@ -5,21 +5,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using TK.MongoDB.Interfaces;
 using TK.MongoDB.Models;
 
 namespace TK.MongoDB.Data
 {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public class Repository<T> : Settings, IRepository<T> where T : BaseEntity
+    public class Repository<T> : IRepository<T> where T : BaseEntity
     {
-        private readonly MongoDBContext Context;
-
+        private readonly DbContext Context;
         protected IMongoCollection<T> Collection { get; private set; }
         protected string CollectionName { get; private set; }
 
         public Repository()
         {
-            Context = new MongoDBContext(ConnectionStringSettingName);
+            if (Context == null) Context = new DbContext();
+            CollectionName = typeof(T).Name.ToLower();
+            Collection = Context.Database.GetCollection<T>(CollectionName);
+
+            //Create index for CreationDate (descending), if it does not exists
+            var indexes = Collection.Indexes.List().ToList();
+            bool DoesIndexExists = indexes.Any(x => x.GetValue("name").AsString == "CreationDateIndex");
+            if (!DoesIndexExists)
+            {
+                var indexBuilder = Builders<T>.IndexKeys;
+                var indexModel = new CreateIndexModel<T>(indexBuilder.Descending(x => x.CreationDate), new CreateIndexOptions { Name = "CreationDateIndex" });
+                Collection.Indexes.CreateOneAsync(indexModel);
+            }
+        }
+
+        public Repository(IDependencyTracker dependencyTracker)
+        {
+            if (Context == null) Context = new DbContext(dependencyTracker);
             CollectionName = typeof(T).Name.ToLower();
             Collection = Context.Database.GetCollection<T>(CollectionName);
 

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using TK.MongoDB.Data;
+using TK.MongoDB.Interfaces;
 
 namespace TK.MongoDB.Test
 {
@@ -20,6 +21,11 @@ namespace TK.MongoDB.Test
 
                     builder.RegisterGeneric(typeof(OverrideRepository<>))
                         .As(typeof(IRepository<>))
+                        .InstancePerLifetimeScope();
+
+                    //Register if Dependency Tracking is required
+                    builder.RegisterType(typeof(DependencyTracker))
+                        .As(typeof(IDependencyTracker))
                         .InstancePerLifetimeScope();
 
                     var container = builder.Build();
