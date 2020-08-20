@@ -1,44 +1,48 @@
 # TK.MongoDB.Repository
-Repository pattern implementation *(using linq)* of MongoDB in .NET Framework
+Repository pattern implementation *(using linq)* of MongoDB in .NET Framework with optional Dependency Tracking implementation.
 
 ## Usage
 #### Settings
 
-2. Default `ConnectionStringSettingName` is set to "*MongoDocConnection*", but you can configure this by calling a static method as below:
+1. Default `ConnectionStringSettingName` is set to "*MongoDocConnection*", but you can configure this by calling a static method as below:
+
+    ```c#
+    Settings.ConnectionStringSettingName = "MongoDocConnection";
+    ```
+
+2. You can configure `ExpiryAfterSeconds` index for a specific collection by calling a static method as below:
+
+    ```c#
+    Settings.Configure<Activity>(2592000);
+    ```
+
+3. If you intend to use **Dependency Tracking**, you can specify commands to <u>not</u> track by setting the *NotTrackedCommands* `IEnumerable<string>`:
 
    ```c#
-   Settings.Configure("MongoDocConnection");
-   ```
-
-3. you can configure `ExpiryAfterSeconds` index for a specific collection by calling a static method as below:
-
-   ```c#
-   Settings.Configure<Activity>(2592000);
+   Settings.NotTrackedCommands = new List<string>() { "isMaster", "buildInfo", "getLastError", "saslStart", "saslContinue" };
    ```
 
 4. Example:
 
-   ```c#
-   public class RepoUnitTest
-   {
-       Repository<Activity> ActivityRepository;
-       public RepoUnitTest()
-       {
-           Settings.Configure("MongoDocConnection");
-           Settings.Configure<Activity>(2592000);
-           ActivityRepository = new Repository<Activity>();
-       }
-   
-   	//.... other methods and properties
-   }
-   ```
+    ```c#
+    public class RepoUnitTest
+    {
+        public RepoUnitTest()
+        {
+            Settings.ConnectionStringSettingName = "MongoDocConnection";
+            Settings.Configure<Activity>(2592000);
+        }
+
+        //.... other methods and properties
+    }
+    ```
 
 #### Models
 
 Create a document model implementing $BaseEntity$ to use in repository. The name of this model will be used as collection name in MongoDB.
 
 ```c#
-public class Activity : BaseFile<ObjectId>
+public class Activity : BaseFile
 {
     public string Name { get; set; }
 }
@@ -122,6 +126,20 @@ public class Activity : BaseFile<ObjectId>
    ```c#
    bool result = ActivityRepository.ExistsAsync(x => x.Name == "abc").Result;
    ```
+
+#### Dependency Tracking
+
+To use dependency tracking implement the `IDependencyTracker` interface as below:
+
+```c#
+public class DependencyTracker : IDependencyTracker
+{
+	public void Dependency(string name, string description, bool success, TimeSpan duration)
+    {
+    	Console.WriteLine($"{name}-{description}-{success}-{duration}");
+    }
+}
+```
 
 #### Tests
 
