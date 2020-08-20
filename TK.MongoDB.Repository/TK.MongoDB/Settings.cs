@@ -1,5 +1,7 @@
 ﻿using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using TK.MongoDB.Models;
 
@@ -13,16 +15,12 @@ namespace TK.MongoDB
         /// <summary>
         /// Connection String name from *.config file. Default value is set to <i>MongoDocConnection</i>.
         /// </summary>
-        protected static string ConnectionStringSettingName = "MongoDocConnection";
+        public static string ConnectionStringSettingName { get; set; } = "MongoDocConnection";
 
         /// <summary>
-        /// Configure connection string setting name added in *.Config
+        /// Commands to NOT track while Dependency Tracking is active.
         /// </summary>
-        /// <param name="connectionStringSettingName">Connection String name from *.config file. Default value is set to <i>MongoDocConnection</i></param>
-        public static void Configure(string connectionStringSettingName = null)
-        {
-            if (!string.IsNullOrWhiteSpace(connectionStringSettingName)) ConnectionStringSettingName = connectionStringSettingName;
-        }
+        public static IEnumerable<string> NotTrackedCommands { get; set; } = new[] { "isMaster", "buildInfo", "getLastError", "saslStart", "saslContinue" };
 
         /// <summary>
         /// Configure document expiry index.
@@ -31,8 +29,10 @@ namespace TK.MongoDB
         /// <param name="expireAfterSeconds">Documents expire after seconds</param>
         public static void Configure<T>(int expireAfterSeconds) where T : BaseEntity
         {
-            MongoDBContext Context = new MongoDBContext(ConnectionStringSettingName);
-            IMongoCollection<T> Collection = Context.Database.GetCollection<T>(typeof(T).Name.ToLower());
+            string connectionString = ConfigurationManager.ConnectionStrings[ConnectionStringSettingName].ConnectionString;
+            string DatabaseName = new MongoUrl(connectionString).DatabaseName;
+            MongoClient Client = new MongoClient(connectionString);
+            IMongoCollection<T> Collection = Client.GetDatabase(DatabaseName).GetCollection<T>(typeof(T).Name.ToLower());
 
             TimeSpan timeSpan = new TimeSpan(TimeSpan.TicksPerSecond * expireAfterSeconds);
 

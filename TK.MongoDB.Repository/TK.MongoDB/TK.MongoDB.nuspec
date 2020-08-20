@@ -10,7 +10,7 @@
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/tallalkazmi/TK.MongoDB.Repository</projectUrl>
     <description>$description$</description>
-    <releaseNotes>Exception fixed: Index with name: CreationDateIndex already exists with different options.</releaseNotes>
+    <releaseNotes>Optional Dependency Tracking added</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>mongodb repository linq .net c#</tags>
   </metadata>

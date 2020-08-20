@@ -12,7 +12,7 @@ namespace TK.MongoDB.Test
     {
         public RepoUnitTest()
         {
-            Settings.Configure("MongoDocConnection");
+            Settings.ConnectionStringSettingName = "MongoDocConnection";
             Settings.Configure<Activity>(2592000);
         }
 
