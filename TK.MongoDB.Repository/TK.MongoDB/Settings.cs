@@ -8,7 +8,7 @@ using TK.MongoDB.Models;
 namespace TK.MongoDB
 {
     /// <summary>
-    /// Database: Connection and Expire After Seconds Index configurations
+    /// Database <i>ConnectionString</i>, <i>expireAfterSeconds</i> index, and dependency tracking settings
     /// </summary>
     public class Settings
     {
@@ -20,7 +20,7 @@ namespace TK.MongoDB
         /// <summary>
         /// Commands to NOT track while Dependency Tracking is active.
         /// </summary>
-        public static IEnumerable<string> NotTrackedCommands { get; set; } = new[] { "isMaster", "buildInfo", "getLastError", "saslStart", "saslContinue" };
+        public static IEnumerable<string> NotTrackedCommands { get; set; } = new[] { "isMaster", "buildInfo", "getLastError", "saslStart", "saslContinue", "listIndexes" };
 
         /// <summary>
         /// Configure document expiry index.

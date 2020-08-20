@@ -10,7 +10,7 @@
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/tallalkazmi/TK.MongoDB.Repository</projectUrl>
     <description>$description$</description>
-    <releaseNotes>Optional Dependency Tracking added</releaseNotes>
+    <releaseNotes>Dependency Tracking: listIndexes added to NotTrackedCommands</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>mongodb repository linq .net c#</tags>
   </metadata>
