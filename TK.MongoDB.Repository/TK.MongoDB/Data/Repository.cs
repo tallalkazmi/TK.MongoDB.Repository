@@ -61,10 +61,19 @@ namespace TK.MongoDB.Data
             var query = await Collection.FindAsync<T>(condition);
             return await query.FirstOrDefaultAsync();
         }
+        public T Find(Expression<Func<T, bool>> condition)
+        {
+            var query = Collection.Find<T>(condition);
+            return query.FirstOrDefault();
+        }
 
         public async Task<T> GetAsync(ObjectId id)
         {
             return await FindAsync(o => o.Id == id);
+        }
+        public T Get(ObjectId id)
+        {
+            return Find(o => o.Id == id);
         }
 
         public async Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, Expression<Func<T, bool>> condition = null)
@@ -75,6 +84,14 @@ namespace TK.MongoDB.Data
             List<T> records = await query.SortByDescending(x => x.CreationDate).Skip((currentPage - 1) * pageSize).Limit(pageSize).ToListAsync();
             return new Tuple<IEnumerable<T>, long>(records, totalCount);
         }
+        public Tuple<IEnumerable<T>, long> Get(int currentPage, int pageSize, Expression<Func<T, bool>> condition = null)
+        {
+            if (condition == null) condition = _ => true;
+            var query = Collection.Find<T>(condition);
+            long totalCount = query.CountDocuments();
+            List<T> records = query.SortByDescending(x => x.CreationDate).Skip((currentPage - 1) * pageSize).Limit(pageSize).ToList();
+            return new Tuple<IEnumerable<T>, long>(records, totalCount);
+        }
 
         public async Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, FilterDefinition<T> filter = null, SortDefinition<T> sort = null)
         {
@@ -83,6 +100,15 @@ namespace TK.MongoDB.Data
 
             if (sort == null) sort = Builders<T>.Sort.Descending(x => x.CreationDate);
             List<T> records = await query.Sort(sort).Skip((currentPage - 1) * pageSize).Limit(pageSize).ToListAsync();
+            return new Tuple<IEnumerable<T>, long>(records, totalCount);
+        }
+        public Tuple<IEnumerable<T>, long> Get(int currentPage, int pageSize, FilterDefinition<T> filter = null, SortDefinition<T> sort = null)
+        {
+            var query = Collection.Find<T>(filter);
+            long totalCount = query.CountDocuments();
+
+            if (sort == null) sort = Builders<T>.Sort.Descending(x => x.CreationDate);
+            List<T> records = query.Sort(sort).Skip((currentPage - 1) * pageSize).Limit(pageSize).ToList();
             return new Tuple<IEnumerable<T>, long>(records, totalCount);
         }
 
@@ -111,6 +137,14 @@ namespace TK.MongoDB.Data
             await Collection.InsertOneAsync(instance);
             return instance;
         }
+        public virtual T Insert(T instance)
+        {
+            instance.Id = ObjectId.GenerateNewId();
+            instance.CreationDate = DateTime.UtcNow;
+            instance.UpdationDate = null;
+            Collection.InsertOne(instance);
+            return instance;
+        }
 
         public virtual async Task<bool> UpdateAsync(T instance)
         {
@@ -125,6 +159,21 @@ namespace TK.MongoDB.Data
             }
 
             ReplaceOneResult result = await Collection.ReplaceOneAsync<T>(x => x.Id == instance.Id, instance);
+            return result.ModifiedCount != 0;
+        }
+        public virtual bool Update(T instance)
+        {
+            var query = Collection.Find<T>(x => x.Id == instance.Id);
+            T _instance = query.FirstOrDefault();
+            if (_instance == null)
+                throw new KeyNotFoundException($"Object with Id: '{instance.Id}' was not found.");
+            else
+            {
+                instance.CreationDate = _instance.CreationDate;
+                instance.UpdationDate = DateTime.UtcNow;
+            }
+
+            ReplaceOneResult result = Collection.ReplaceOne<T>(x => x.Id == instance.Id, instance);
             return result.ModifiedCount != 0;
         }
 
@@ -149,16 +198,47 @@ namespace TK.MongoDB.Data
                 return result.DeletedCount != 0;
             }
         }
+        public virtual bool Delete(ObjectId id, bool logical = true)
+        {
+            var query = Collection.Find<T>(x => x.Id == id);
+            T _instance = query.FirstOrDefault();
+            if (_instance == null)
+                throw new KeyNotFoundException($"Object with Id: '{id}' was not found.");
+
+            if (logical)
+            {
+                UpdateDefinition<T> update = Builders<T>.Update
+                    .Set(x => x.Deleted, true)
+                    .Set(x => x.UpdationDate, DateTime.UtcNow);
+                UpdateResult result = Collection.UpdateOne(x => x.Id == id, update);
+                return result.ModifiedCount != 0;
+            }
+            else
+            {
+                DeleteResult result = Collection.DeleteOne(x => x.Id == id);
+                return result.DeletedCount != 0;
+            }
+        }
 
         public async Task<long> CountAsync(Expression<Func<T, bool>> condition = null)
         {
             if (condition == null) condition = _ => true;
             return await Collection.CountDocumentsAsync(condition);
         }
+        public long Count(Expression<Func<T, bool>> condition = null)
+        {
+            if (condition == null) condition = _ => true;
+            return Collection.CountDocuments(condition);
+        }
 
         public async Task<bool> ExistsAsync(Expression<Func<T, bool>> condition)
         {
             var result = await CountAsync(condition);
+            return result > 0;
+        }
+        public bool Exists(Expression<Func<T, bool>> condition)
+        {
+            var result = Count(condition);
             return result > 0;
         }
 
