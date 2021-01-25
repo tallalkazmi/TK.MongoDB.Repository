@@ -1,6 +1,6 @@
 # TK.MongoDB.Repository
-![Nuget](https://img.shields.io/nuget/v/TK.MongoDB.Repository) 
-![Nuget](https://img.shields.io/nuget/dt/TK.MongoDB.Repository)
+[![Nuget](https://img.shields.io/nuget/v/TK.MongoDB.Repository)](https://www.nuget.org/packages/TK.MongoDB.Repository) 
+[![Nuget](https://img.shields.io/nuget/dt/TK.MongoDB.Repository)](https://www.nuget.org/packages/TK.MongoDB.Repository)
 ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2) 
 ![Azure DevOps tests](https://img.shields.io/azure-devops/tests/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2) 
 ![Azure DevOps releases](https://img.shields.io/azure-devops/release/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2/2)
