@@ -1,5 +1,9 @@
 # TK.MongoDB.Repository
-![Nuget](https://img.shields.io/nuget/v/TK.MongoDB.Repository) ![Azure DevOps builds](https://img.shields.io/azure-devops/build/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2) ![Azure DevOps tests](https://img.shields.io/azure-devops/tests/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2) ![Azure DevOps releases](https://img.shields.io/azure-devops/release/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2/2) ![Nuget](https://img.shields.io/nuget/dt/TK.MongoDB.Repository)
+![Nuget](https://img.shields.io/nuget/v/TK.MongoDB.Repository) 
+![Nuget](https://img.shields.io/nuget/dt/TK.MongoDB.Repository)
+![Azure DevOps builds](https://img.shields.io/azure-devops/build/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2) 
+![Azure DevOps tests](https://img.shields.io/azure-devops/tests/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2) 
+![Azure DevOps releases](https://img.shields.io/azure-devops/release/tallalkazmi/79c589e2-20be-4ad6-9b5a-90be5ddc7916/2/2)
 
 Repository pattern implementation *(using linq)* of MongoDB in .NET Framework with optional Dependency Tracking implementation.
 
