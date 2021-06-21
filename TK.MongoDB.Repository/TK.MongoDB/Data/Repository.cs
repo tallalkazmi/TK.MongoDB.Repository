@@ -95,7 +95,7 @@ namespace TK.MongoDB.Data
 
         public async Task<Tuple<IEnumerable<T>, long>> GetAsync(int currentPage, int pageSize, FilterDefinition<T> filter = null, SortDefinition<T> sort = null)
         {
-            var query = Collection.Find<T>(filter);
+            var query = filter == null ? Collection.Find<T>(_ => true) : Collection.Find<T>(filter);
             long totalCount = await query.CountDocumentsAsync();
 
             if (sort == null) sort = Builders<T>.Sort.Descending(x => x.CreationDate);
@@ -104,7 +104,7 @@ namespace TK.MongoDB.Data
         }
         public Tuple<IEnumerable<T>, long> Get(int currentPage, int pageSize, FilterDefinition<T> filter = null, SortDefinition<T> sort = null)
         {
-            var query = Collection.Find<T>(filter);
+            var query = filter == null ? Collection.Find<T>(_ => true) : Collection.Find<T>(filter);
             long totalCount = query.CountDocuments();
 
             if (sort == null) sort = Builders<T>.Sort.Descending(x => x.CreationDate);
