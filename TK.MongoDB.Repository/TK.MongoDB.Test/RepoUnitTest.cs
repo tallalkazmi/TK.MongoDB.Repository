@@ -13,7 +13,9 @@ namespace TK.MongoDB.Test
         public RepoUnitTest()
         {
             Settings.ConnectionStringSettingName = "MongoDocConnection";
-            Settings.Configure<Activity>(2592000);
+            //Settings.Configure<Activity>(2592000);
+
+            Settings.DocumentsExpireAfter = new Dictionary<Type, double> { { typeof(Activity), 2592000 } };
         }
 
         [TestMethod]

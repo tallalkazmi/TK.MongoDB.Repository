@@ -2,6 +2,7 @@
 using MongoDB.Driver.Core.Events;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Configuration;
 using System.Linq;
@@ -15,6 +16,8 @@ namespace TK.MongoDB
         readonly IDependencyTracker DependencyTracker;
         readonly string DatabaseName;
 
+        public readonly IDictionary<Type, double> ExpireAfterSeconds;
+
         MongoClient Client;
 
         /// <summary>
@@ -22,6 +25,7 @@ namespace TK.MongoDB
         /// </summary>
         public DbContext()
         {
+            ExpireAfterSeconds = DocumentsExpireAfter;
             string connectionString = ConfigurationManager.ConnectionStrings[ConnectionStringSettingName].ConnectionString;
             DatabaseName = new MongoUrl(connectionString).DatabaseName;
             Client = new MongoClient(connectionString);
@@ -37,20 +41,21 @@ namespace TK.MongoDB
             var notTrackedCommands = NotTrackedCommands.Select(v => v.ToLower()).ToImmutableHashSet();
 
             DependencyTracker = dependencyTracker;
-            
+
+            ExpireAfterSeconds = DocumentsExpireAfter;
             string connectionString = ConfigurationManager.ConnectionStrings[ConnectionStringSettingName].ConnectionString;
             MongoUrl mongoUrl = new MongoUrl(connectionString);
             MongoClientSettings mongoClientSettings = MongoClientSettings.FromUrl(mongoUrl);
 
             mongoClientSettings.ClusterConfigurator = clusterConfigurator =>
             {
-                clusterConfigurator.Subscribe< CommandStartedEvent>(e =>
-                {
-                    if (e.Command != null && !notTrackedCommands.Contains(e.CommandName.ToLower()))
-                    {
-                        QueriesBuffer.TryAdd(e.RequestId, e.Command.ToString());
-                    }
-                });
+                clusterConfigurator.Subscribe<CommandStartedEvent>(e =>
+               {
+                   if (e.Command != null && !notTrackedCommands.Contains(e.CommandName.ToLower()))
+                   {
+                       QueriesBuffer.TryAdd(e.RequestId, e.Command.ToString());
+                   }
+               });
 
                 clusterConfigurator.Subscribe<CommandSucceededEvent>(e =>
                 {
