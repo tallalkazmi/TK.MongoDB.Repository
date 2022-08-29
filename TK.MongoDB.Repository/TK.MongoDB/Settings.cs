@@ -23,10 +23,16 @@ namespace TK.MongoDB
         public static IEnumerable<string> NotTrackedCommands { get; set; } = new[] { "isMaster", "buildInfo", "getLastError", "saslStart", "saslContinue", "listIndexes" };
 
         /// <summary>
+        /// Dictionary of Document Types and their Expiry times in seconds.
+        /// </summary>
+        public static IDictionary<Type, double> DocumentsExpireAfter { get; set; }
+
+        /// <summary>
         /// Configure document expiry index.
         /// </summary>
         /// <typeparam name="T">Collection model</typeparam>
         /// <param name="expireAfterSeconds">Documents expire after seconds</param>
+        [Obsolete("Use DocumentsExpireAfter instead", true)]
         public static void Configure<T>(int expireAfterSeconds) where T : BaseEntity
         {
             string connectionString = ConfigurationManager.ConnectionStrings[ConnectionStringSettingName].ConnectionString;
