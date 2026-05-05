@@ -28,7 +28,8 @@ namespace TK.MongoDB.Data
             bool DoesIndexExists = indexes.Any(x => x.GetValue("name").AsString == "CreationDateIndex");
             if (!DoesIndexExists)
             {
-                bool found = Context.ExpireAfterSeconds.TryGetValue(typeof(T), out double seconds);
+                double seconds = 0;
+                bool found = Context.ExpireAfterSeconds != null && Context.ExpireAfterSeconds.TryGetValue(typeof(T), out seconds);
 
                 CreateIndexOptions indexOptions = found ?
                     new CreateIndexOptions { ExpireAfter = TimeSpan.FromSeconds(seconds), Name = "CreationDateIndex" } :
