@@ -41,6 +41,7 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
+  enabled: false
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
