@@ -20,15 +20,11 @@ steps:
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      Invoke-WebRequest -Uri "https://microsoft.com" -OutFile "ndp461-devpack.exe"
-          Start-Process -FilePath "ndp461-devpack.exe" -ArgumentList "/quiet /norestart" -Wait
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
+    msbuildArgs: '/p:TargetFrameworkVersion=v4.6.1'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
