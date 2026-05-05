@@ -21,6 +21,18 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+- task: PowerShell@2
+  displayName: 'Install .NET 4.6.1 Targeting Pack'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $url = "https://go.microsoft.com/fwlink/?linkid=2099470"
+      $installer = "$env:TEMP\NDP461-DevPack.exe"
+      Invoke-WebRequest -Uri $url -OutFile $installer
+      Start-Process -FilePath $installer -Args "/quiet /norestart" -Wait
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
